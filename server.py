@@ -21,9 +21,7 @@ class MyTCPServerHandler(socketserver.BaseRequestHandler):
         resp = json.loads(receive(self.request).decode('UTF-8'))
         SECURE = resp.get('SECURE')
 
-        myAsymmetric = None
         if SECURE:
-            myAsymmetric = MyAsymmetric()
             send(self.request, json.dumps(myAsymmetric.getPub()).encode('UTF-8'))
             myAsymmetric.setPubFriend(json.loads(receive(self.request).decode('UTF-8')))
 
@@ -70,6 +68,8 @@ def init(port):
         server = MyTCPServer(('0.0.0.0', port), MyTCPServerHandler)
         server_thread = threading.Thread(target=server.serve_forever)
 
+        global myAsymmetric
+        myAsymmetric = MyAsymmetric()
         server_thread.daemon = True
         server_thread.start()
 
